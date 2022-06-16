@@ -1,0 +1,79 @@
+apiVersion: skaffold/v2beta28
+kind: Config
+metadata:
+  name: coit-simple-microservice
+build:
+  tagPolicy:
+    customTemplate:
+      template: "{{.FOO}}_{{.BAR}}"
+      components:
+      - name: FOO
+        dateTime:
+          format: "2006-01-02"
+          timezone: "UTC"
+      - name: BAR
+        gitCommit:
+          variant: AbbrevCommitSha
+  artifacts:
+  - image: kollidatta/coit-backend1
+    context: coit-backend1
+    docker:
+      dockerfile: Dockerfile-multistage
+  - image: kollidatta/coit-backend2
+    context: coit-backend2
+    docker:
+      dockerfile: Dockerfile
+  - image: kollidatta/coit-frontend
+    context: coit-frontend
+    docker:
+      dockerfile: Dockerfile-multistage
+  local:
+    push: false
+  
+deploy:
+  kubectl:
+    manifests:
+    - resource-manifests/coit-backend1-deployment.yaml
+    - resource-manifests/coit-backend2-deployment.yaml
+    - resource-manifests/coit-frontend-deployment.yaml
+    - resource-manifests/service-coit-backend1-lb.yaml
+    - resource-manifests/service-coit-backend2.yaml
+    - resource-manifests/service-coit-frontend-lb.yaml
+portForward:
+    - resourceType: deployment
+      resourceName: coit-frontend-lb
+      port: 80
+      localPort: 4500 # *optional*
+    - resourceType: deployment
+      resourceName: coit-backend-lb
+      port: 80
+      localPort: 4600 # *optional*
+profiles:
+- name: dev
+  build:
+    artifacts:
+    - image: coit-backend1
+      context: coit-backend1
+      docker:
+        dockerfile: coit-backend1\Dockerfile-multistage
+    - image: coit-backend2
+      context: coit-backend2
+      docker:
+        dockerfile: coit-backend2\Dockerfile
+    - image: coit-frontend
+      context: coit-frontend
+      docker:
+        dockerfile: coit-frontend\Dockerfile-multistage
+    local:
+      push: false
+  deploy:
+    kubectl:
+      manifests:
+      - resource-manifests/coit-backend1-deployment.yaml
+      - resource-manifests/coit-backend2-deployment.yaml
+      - resource-manifests/coit-frontend-deployment.yaml
+      - resource-manifests/service-coit-backend1-lb.yaml
+      - resource-manifests/service-coit-backend2.yaml
+      - resource-manifests/service-coit-frontend-lb.yaml
+      
+ 
