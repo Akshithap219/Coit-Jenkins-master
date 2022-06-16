@@ -34,7 +34,7 @@ pipeline {
             parallel {
                 stage('Build Frontend') {
                     steps{
-                        dir('./Coit-Jenkins-master/coit-frontend'){
+                        dir('./coit-frontend'){
                             script{
                                 sh 'chmod a+x node_modules/.bin/react-scripts'
                                 def FRONTENDDOCKER = 'Dockerfile-multistage'
@@ -75,7 +75,7 @@ pipeline {
                         }
                     post{
                         success{
-                            echo "Frontend build is success"
+                            echo "Backend1 build is success"
                         }
                         failure{
                             echo 'I run when you fail'
