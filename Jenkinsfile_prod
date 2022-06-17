@@ -17,9 +17,9 @@ pipeline {
     stages {
         stage('Checkout'){
 			steps{
-				sh 'mvn --version'
-                sh 'git --version'
-				sh 'docker --version'
+				bat 'mvn --version'
+                bat 'git --version'
+				bat 'docker --version'
 				echo "Build"
 				echo "PATH - $PATH"
 				echo "BUILD_NUMBER - $env.BUILD_NUMBER"
@@ -38,7 +38,7 @@ pipeline {
                     steps{
                         dir('./coit-frontend'){
                             script{
-                                sh 'chmod a+x node_modules/.bin/react-scripts'
+                                //sh 'chmod a+x node_modules/.bin/react-scripts'
                                 def FRONTENDDOCKER = 'Dockerfile-multistage'
                                 DockerFrontend = docker.build("akshithap219/coit-frontend:${tag}","-f ${FRONTENDDOCKER} .")
 				                //sh('docker build -t kollidatta/coitfrontend:v1 -f Dockerfile-multistage .')
@@ -93,7 +93,7 @@ pipeline {
                 //dir('https://github.com/kollidatta/Kustomize-frontend'){
                 script{
                     //sh('pwd')
-                    sh('''docker run --rm --user="root" -e TAG=${tag} -v "${PWD}":/workspace -w /workspace mikefarah/yq eval '.spec.template.spec.containers.image.tag = strenv(TAG)' -i coit-frontend-deployment.yaml''')
+                    bat('''docker run --rm --user="root" -e TAG=${tag} -v "${PWD}":/workspace -w /workspace mikefarah/yq eval '.spec.template.spec.containers.image.tag = strenv(TAG)' -i coit-frontend-deployment.yaml''')
                     }
                 
             }
