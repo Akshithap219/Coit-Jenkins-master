@@ -31,8 +31,10 @@ pipeline {
 			}
         }	
         stage('Build Images') {
+            echo "Build Image"
             parallel {
                 stage('Build Frontend') {
+                    echo "FE build"
                     steps{
                         dir('./coit-frontend'){
                             script{
@@ -58,6 +60,7 @@ pipeline {
                 }              
  
                 stage('Build backend1'){
+                    echo "Backend build"
                     steps{
                         dir('./coit-backend1'){
                             script{
